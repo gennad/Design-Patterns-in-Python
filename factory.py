@@ -1,73 +1,70 @@
-"""
-A generic factory implementation.
-Examples:
->>f=Factory()
->>class A:pass
->>f.register("createA",A)
->>f.createA()
-<__main__.A instance at 01491E7C>
+class Pizza(object):
+    def __init__(self):
+        self._price = None
 
->>> class B:
-... 	def __init__(self, a,b=1):
-... 		self.a=a
-... 		self.b=b
-...
->>> f.register("createB",B,1,b=2)
->>> f.createB()
->>> b=f.createB()
->>>
->>> b.a
-1
->>> b.b
-2
+    def get_price(self):
+        return self._price
 
->>> class C:
-... 	def __init__(self,a,b,c=1,d=2):
-... 		self.values = (a,b,c,d)
-...
->>> f.register("createC",C,1,c=3)
->>> c=f.createC(2,d=4)
->>> c.values
-(1, 2, 3, 4)
+class HamAndMushroomPizza(Pizza):
+    def __init__(self):
+        self._price = 8.5
 
->>> f.register("importSerialization",__import__,"cPickle")
->>> pickle=f.importSerialization()
->>> pickle
-<module 'cPickle' (built-in)>
->>> f.register("importSerialization",__import__,"marshal")
->>> pickle=f.importSerialization()
->>> pickle
-<module 'marshal' (built-in)>
+class DeluxePizza(Pizza):
+    def __init__(self):
+        self._price = 10.5
 
->>> f.unregister("importSerialization")
->>> f.importSerialization()
-Traceback (most recent call last):
-  File "<interactive input>", line 1, in ?
-AttributeError: Factory instance has no attribute 'importSerialization'
-"""
+class HawaiianPizza(Pizza):
+    def __init__(self):
+        self._price = 11.5
 
-class Factory:
-    def register(self, methodName, constructor, *args, **kargs):
-        """register a constructor"""
-        _args = [constructor]
-        _args.extend(args)
-        setattr(self, methodName,apply(Functor,_args, kargs))
+class PizzaFactory(object):
+    @staticmethod
+    def create_pizza(pizza_type):
+        if pizza_type == 'HamMushroom':
+            return HamAndMushroomPizza()
+        elif pizza_type == 'Deluxe':
+            return DeluxePizza()
+        elif pizza_type == 'Hawaiian':
+            return HawaiianPizza()
 
-    def unregister(self, methodName):
-        """unregister a constructor"""
-        delattr(self, methodName)
+if __name__ == '__main__':
+    for pizza_type in ('HamMushroom', 'Deluxe', 'Hawaiian'):
+        print 'Price of {0} is {1}'.format(pizza_type, PizzaFactory.create_pizza(pizza_type).get_price())
 
-class Functor:
-    def __init__(self, function, *args, **kargs):
-        assert callable(function), "function should be a callable obj"
-        self._function = function
-        self._args = args
-        self._kargs = kargs
 
-    def __call__(self, *args, **kargs):
-        """call function"""
-        _args = list(self._args)
-        _args.extend(args)
-        _kargs = self._kargs.copy()
-        _kargs.update(kargs)
-        return apply(self._function,_args,_kargs)
+# ------------------- Second example -----------------
+
+
+class JapaneseGetter:
+    """A simple localizer a la gettext"""
+
+    def __init__(self):
+        self.trans = dict(dog="犬", cat="猫")
+
+    def get(self, msgid):
+        """We'll punt if we don't have a translation"""
+
+        try:
+            return unicode(self.trans[msgid], "utf-8")
+        except KeyError:
+            return unicode(msgid)
+
+class EnglishGetter:
+    """Simply echoes the msg ids"""
+    def get(self, msgid):
+        return unicode(msgid)
+
+def get_localizer(language="English"):
+    """The factory method"""
+
+    languages = dict(English=EnglishGetter,
+                     Japanese=JapaneseGetter)
+
+    return languages[language]()
+
+# Create our localizers
+e, j = get_localizer("English"), get_localizer("Japanese")
+
+# Localize some text
+for msgid in "dog parrot cat".split():
+    print e.get(msgid), j.get(msgid)

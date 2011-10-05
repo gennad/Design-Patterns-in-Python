@@ -1,49 +1,34 @@
-## {{{ http://code.activestate.com/recipes/576758/ (r3)
-import abc
-
-def keycomparable(Derived):
-    class KeyComparableImpl(metaclass = abc.ABCMeta):
-        @abc.abstractmethod
-        def _cmpkey(self):
-            pass
-
-        def __lt__(self, other):
-            if not isinstance(other, Derived):
-                return NotImplemented
-            return self._cmpkey() < other._cmpkey()
-
-        def __le__(self, other):
-            if not isinstance(other, Derived):
-                return NotImplemented
-            return self._cmpkey() <= other._cmpkey()
-
-        def __eq__(self, other):
-            if not isinstance(other, Derived):
-                return NotImplemented
-            return self._cmpkey() == other._cmpkey()
+import time
 
 
-    class Wrapper(Derived, KeyComparableImpl):
-        pass
+def time_this(func):
+    """The time_this decorator"""
 
-    Wrapper.__name__ = Derived.__name__
-    Wrapper.__doc__ = Derived.__doc__
-    return Wrapper
+    def decorated(*args, **kwargs):
+        start = time.time()
+        result = func(*args, **kwargs)
+        print 'Rain in', time.time() - start, 'seconds'
+        return result
+    return decorated
 
 
-@keycomparable
-class IntABS:
-    "sample class"
-    def __init__(self,val):
-        self.val = val
+# Decorator syntax
+@time_this
+def count(until):
+    """Counts to 'until', then returns the result"""
 
-    def _cmpkey(self):
-        return abs(self.val)
+    print "Counting to", until, "…"
+    num = 0
+    for i in xrange(to_num(until)):
+        num += 1
+    return num
 
-    def __str__(self):
-        return str(abs(self.val))
 
-    def __repr__(self):
-        return "abs({0})".format(self.val)
-## end of http://code.activestate.com/recipes/576758/ }}}
+def to_num(numstr):
+    """Turns a comma-separated number string to an int"""
+    return int(numstr.replace(",", ""))
 
+# Run count with various values
+for number in ("10,000", "100,000", "1,000,000"):
+    print count(number)
+    print "-" * 20

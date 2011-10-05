@@ -1,10 +1,29 @@
-# Toy-example facade
-class LifoStack:
+# Complex parts
+class CPU:
+    def freeze(self): pass
+    def jump(self, position): pass
+    def execute(self): pass
+
+class Memory:
+    def load(self, position, data): pass
+
+class HardDrive:
+    def read(self, lba, size): pass
+
+# Facade
+class Computer:
     def __init__(self):
-        self._stack = []
+        self.cpu = CPU()
+        self.memory = Memory()
+        self.hard_drive = HardDrive()
 
-    def push(self, datum):
-        self._stack.append(datum)
+    def start_computer(self):
+        self.cpu.freeze()
+        self.memory.load(0, self.hard_drive.read(0, 1024))
+        self.cpu.jump(10)
+        self.cpu.execute()
 
-    def pop(self):
-        return self._stack.pop()
+# Client
+if __name__ == '__main__':
+    facade = Computer()
+    facade.start_computer()

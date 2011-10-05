@@ -5,5 +5,4 @@ class RestrictingWrapper(object):
     def __getattr__(self, n):
         if n in self._block:
             raise AttributeError, n
-    return getattr(self._w, n)
-
+        return getattr(self._w, n)

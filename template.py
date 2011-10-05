@@ -29,15 +29,27 @@ class AbstractGame:
          raise TypeError('abstract method must be overridden')
 
 
-Now to create concrete (non-abstract) games, you subclass AbstractGame
-and override the abstract methods.
+# Now to create concrete (non-abstract) games, you subclass AbstractGame
+# and override the abstract methods.
 
 class Chess(AbstractGame):
      def initializeGame(self):
          # Put the pieces on the board.
-         ...
+         pass
 
      def makePlay(player):
          # Process a turn for the player
-         ...
+         pass
 
+# --------- Alex's Martelli example ---------
+
+class AbstractBase(object):
+    def orgMethod(self):
+        self.doThis()
+        self.doThat()
+
+class Concrete(AbstractBase):
+    def doThis(self):
+        pass
+    def doThat(self):
+        pass

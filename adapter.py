@@ -1,20 +1,25 @@
-class Barfooer:
-    def barfoo(self, bar, foo):
-        pass
+class Adaptee:
+    def specific_request(self):
+        return 'Adaptee'
 
-# Per instance, by wrapping and delegation
-class FoobaringWrapper:
-    def __init__(self, wrappee):
-        self.w = wrappee
-    def foobar(self, foo, bar):
-        return self.w.barfoo(bar, foo)
+class Adapter:
+    def __init__(self, adaptee):
+        self.adaptee = adaptee
 
-foobarer = FoobaringWrapper(barfooer)
+    def request(self):
+        return self.adaptee.specific_request()
 
-# Per-classs by subclassing and self-delegation
-class Foobarer(Barfooer):
-    def foobar(self,foo, bar):
-        return self.barfoo(bar, foo)
+client = Adapter(Adaptee())
+print client.request()
 
-foobarer = Foobarer(some, init, params)
+# --------- Second example (by Alex Martelli)------------
 
+class UppercasingFile:
+    def __init__(self, *a, **k):
+        self.f = file(*a, **k)
+
+    def write(self, data):
+        self.f.write(data.upper())
+
+    def __getattr__(self, name):
+        return getattr(self.f, name)

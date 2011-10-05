@@ -1,77 +1,62 @@
-## {{{ http://code.activestate.com/recipes/131499/ (r2)
-class Subject:
-    def __init__(self):
-        self._observers = []
+class AbstractSubject:
+    def register(self, listener):
+        raise NotImplementedError("Must subclass me")
 
-    def attach(self, observer):
-        if not observer in self._observers:
-            self._observers.append(observer)
+    def unregister(self, listener):
+        raise NotImplementedError("Must subclass me")
 
-    def detach(self, observer):
-        try:
-            self._observers.remove(observer)
-        except ValueError:
-            pass
-
-    def notify(self, modifier=None):
-        for observer in self._observers:
-            if modifier != observer:
-                observer.update(self)
+    def notify_listeners(self, event):
+        raise NotImplementedError("Must subclass me")
 
 
-# Example usage
-class Data(Subject):
-    def __init__(self, name=''):
-        Subject.__init__(self)
+class Listener:
+    def __init__(self, name, subject):
         self.name = name
-        self.data = 0
+        subject.register(self)
 
-    def setData(self, data):
-        self.data = data
-        self.notify()
+    def notify(self, event):
+        print self.name, "received event", event
 
-    def getData(self):
+
+class Subject(AbstractSubject):
+    def __init__(self):
+        self.listeners = []
+        self.data = None
+
+    def getUserAction(self):
+        self.data = raw_input('Enter something to do:')
         return self.data
 
+    # Implement abstract Class AbstractSubject
 
-class HexViewer:
-    def update(self, subject):
-        print 'HexViewer: Subject %s has data 0x%x' % (subject.name, subject.getData())
+    def register(self, listener):
+        self.listeners.append(listener)
+
+    def unregister(self, listener):
+        self.listeners.remove(listener)
+
+    def notify_listeners(self, event):
+        for listener in self.listeners:
+            listener.notify(event)
 
 
-class DecimalViewer:
-    def update(self, subject):
-        print 'DecimalViewer: Subject %s has data %d' % (subject.name, subject.getData())
+if __name__ == "__main__":
+    # Make a subject object to spy on
+    subject = Subject()
 
+    # Register two listeners to monitor it.
+    listenerA = Listener("<listener A>", subject)
+    listenerB = Listener("<listener B>", subject)
 
-# Example usage...
-def main():
-    data1 = Data('Data 1')
-    data2 = Data('Data 2')
-    view1 = DecimalViewer()
-    view2 = HexViewer()
-    data1.attach(view1)
-    data1.attach(view2)
-    data2.attach(view2)
-    data2.attach(view1)
+    # Simulated event
+    subject.notify_listeners("<event 1>")
+    # Outputs:
+    #     <listener A> received event <event 1>
+    #     <listener B> received event <event 1>
 
-    print "Setting Data 1 = 10"
-    data1.setData(10)
-    print "Setting Data 2 = 15"
-    data2.setData(15)
-    print "Setting Data 1 = 3"
-    data1.setData(3)
-    print "Setting Data 2 = 5"
-    data2.setData(5)
-    print "Detach HexViewer from data1 and data2."
-    data1.detach(view2)
-    data2.detach(view2)
-    print "Setting Data 1 = 10"
-    data1.setData(10)
-    print "Setting Data 2 = 15"
-    data2.setData(15)
-
-if __name__ == '__main__':
-    main()
-## end of http://code.activestate.com/recipes/131499/ }}}
-
+    action = subject.getUserAction()
+    subject.notify_listeners(action)
+    # Enter something to do:hello
+    # outputs:
+    #     <listener A> received event hello
+    #     <listener B> received event hello

@@ -21,13 +21,14 @@ class CodeGeneratorVisitor(object):
     def visit(self, node):
         print "push %d" % node.props['value']
 
->>> CodeGeneratingVisitor().visit(tree)
-push 1
-print
-push 2
-push 4
-push 3
-multiply
-plus
-print
-
+sometree = None
+CodeGeneratorVisitor().visit(sometree)
+# Output:
+# push 1
+# print
+# push 2
+# push 4
+# push 3
+# multiply
+# plus
+# print

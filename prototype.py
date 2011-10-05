@@ -1,25 +1,50 @@
-## {{{ http://code.activestate.com/recipes/86651/ (r1)
-from copy import deepcopy
+from copy import deepcopy, copy
 
-class Prototype:
-    def __init__(self):
-        self._objs = {}
+copyfunc = deepcopy
 
-    def registerObject(self, name, obj):
-        """
-        register an object.
-        """
-        self._objs[name] = obj
 
-    def unregisterObject(self, name):
-        """unregister an object"""
-        del self._objs[name]
+def Prototype(name, bases, dict):
+    class Cls:
+        pass
+    Cls.__name__ = name
+    Cls.__bases__ = bases
+    Cls.__dict__ = dict
+    inst = Cls()
+    inst.__call__ = copyier(inst)
+    return inst
 
-    def clone(self, name, **attr):
-        """clone a registered object and add/replace attr"""
-        obj = deepcopy(self._objs[name])
-        obj.__dict__.update(attr)
-        return obj
 
-## end of http://code.activestate.com/recipes/86651/ }}}
+class copyier:
+    def __init__(self, inst):
+        self._inst = inst
 
+    def __call__(self):
+        newinst = copyfunc(self._inst)
+        if copyfunc == deepcopy:
+            newinst.__call__._inst = newinst
+        else:
+            newinst.__call__ = copyier(newinst)
+        return newinst
+
+
+class Point:
+    __metaclass__ = Prototype
+    x = 0
+    y = 0
+
+    def move(self, x, y):
+        self.x += x
+        self.y += y
+
+a = Point()
+print a.x, a.y          # prints 0 0
+a.move(100, 100)
+print a.x, a.y          # prints 100 100
+
+Point.move(50, 50)
+print Point.x, Point.y  # prints 50 50
+p = Point()
+print p.x, p.y          # prints 50 50
+
+q = p()
+print q.x, q.y          # prints 50 50

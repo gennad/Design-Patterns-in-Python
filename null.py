@@ -38,6 +38,7 @@ Dinu C. Gherman,
 August 2001
 """
 
+
 class Null:
     """A class for implementing Null objects.
 
@@ -53,20 +54,17 @@ class Null:
     provided here.
     """
 
-    # object constructing
-
+    # Object constructing
     def __init__(self, *args, **kwargs):
         "Ignore parameters."
         return None
 
-    # object calling
-
+    # Object calling
     def __call__(self, *args, **kwargs):
         "Ignore method calls."
         return self
 
-    # attribute handling
-
+    # Attribute handling
     def __getattr__(self, mname):
         "Ignore attribute requests."
         return self
@@ -79,8 +77,7 @@ class Null:
         "Ignore deleting attributes."
         return self
 
-    # misc.
-
+    # Misc.
     def __repr__(self):
         "Return a string representation."
         return "<Null>"
@@ -93,8 +90,7 @@ class Null:
 def test():
     "Perform some decent tests, or rather: demos."
 
-    # constructing and calling
-
+    # Constructing and calling
     n = Null()
     n = Null('value')
     n = Null('value', param='value')
@@ -103,8 +99,7 @@ def test():
     n('value')
     n('value', param='value')
 
-    # attribute handling
-
+    # Attribute handling
     n.attr1
     n.attr1.attr2
     n.method1()
@@ -121,8 +116,7 @@ def test():
     del n.attr1
     del n.attr1.attr2.attr3
 
-    # representation and conversion to a string
-
+    # Representation and conversion to a string
     assert repr(n) == '<Null>'
     assert str(n) == 'Null'
 
