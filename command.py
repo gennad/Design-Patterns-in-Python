@@ -91,7 +91,7 @@ class HistoryCommand(Command):
 # exit command
 class ExitCommand(Command):
     def execute(self):
-        raise SessionClosed("Good bay!")
+        raise SessionClosed("Good day!")
 
     def name(self):
         return "exit"
