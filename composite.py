@@ -1,36 +1,39 @@
-class Component(object):
-    def __init__(self, *args, **kw):
-        pass
+import abc
 
+
+class ComponentInterface(object):
+    __metaclass__ = abc.ABCMeta
+
+    @abc.abstractmethod
     def component_function(self):
         pass
 
 
-class Leaf(Component):
-    def __init__(self, *args, **kw):
-        Component.__init__(self, *args, **kw)
+class Leaf(ComponentInterface):
+    def __init__(self, number):
+        self.number = number
 
     def component_function(self):
-        print "some function"
+        print("i'm leaf number: {}".format(self.number))
 
 
-class Composite(Component):
-    def __init__(self, *args, **kw):
-        Component.__init__(self, *args, **kw)
-        self.children = []
+class Composite(ComponentInterface):
+    def __init__(self):
+        self._children = set()
 
     def append_child(self, child):
-        self.children.append(child)
+        self._children.add(child)
 
     def remove_child(self, child):
-        self.children.remove(child)
+        self._children.remove(child)
 
     def component_function(self):
-        map(lambda x: x.component_function(), self.children)
+        for child in self._children:
+            child.component_function()
 
-c = Composite()
-l = Leaf()
-l_two = Leaf()
-c.append_child(l)
-c.append_child(l_two)
-c.component_function()
+
+if __name__ == '__main__':
+    composite = Composite()
+    for number in range(2):
+        composite.append_child(Leaf(number))
+    composite.component_function()
