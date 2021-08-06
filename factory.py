@@ -1,3 +1,8 @@
+"""
+Define an interface for creating a single object, but let subclasses decide which class to instantiate. 
+    Factory Method lets a class defer instantiation to subclasses.
+"""
+
 class Pizza(object):
     def __init__(self):
         self._price = None
