@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
 
+"""
+Tactic of delaying the creation of an object, the calculation of a value, or some other expensive process until the first time it is needed. 
+    This pattern appears in the GoF catalog as "virtual proxy", an implementation strategy for the Proxy pattern.
+"""
+
 class IMath:
     """Interface for proxy and real subject."""
     def add(self, x, y):
