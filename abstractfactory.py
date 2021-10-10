@@ -1,4 +1,7 @@
-"""Implementation of the abstract factory pattern"""
+"""
+Provide an interface for creating families of related or dependent objects without specifying their concrete classes.
+
+Implementation of the abstract factory pattern"""
 import random
 
 
